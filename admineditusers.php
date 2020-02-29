@@ -6,9 +6,10 @@
     } 
 
     include_once 'classes/PDO.DB.class.php';
+    $dbObj = new DB();
     $data = array();
+    
     if(isset($_GET['editId'])){
-        $dbObj = new DB();
         try{
             $stmt = $dbObj->getDBH()->prepare("SELECT * from attendee where idattendee = :id");
             $stmt->execute(array('id'=>$_GET['editId']));
@@ -42,7 +43,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Edit users</title>
+        <title>Edit Users</title>
         <link rel="shortcut icon" href="https://learncodeweb.com/demo/favicon.ico">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" type="text/css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -57,7 +58,7 @@
                     <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
                         <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                     </h5>
-                    <a href="browseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
+                    <a href="adminbrowseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
                 </div>
                 <div class="card-body">
                     <div class="col-sm-6">
@@ -107,7 +108,6 @@
         if (isset($_POST['submit'])){
             $data = [
                 'name' => $_POST['username'],
-                // 'password' => $_POST['userpwd'],
                 'password' => hash('sha256', $_POST['userpwd']),
                 'role' => $_POST['userrole'],
                 'id' => $_GET['editId']

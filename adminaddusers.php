@@ -7,6 +7,7 @@
     
     include_once 'classes/PDO.DB.class.php';
     $dbObj = new DB();
+    
     function getAllRoles($dbh){
         $roles = array();
         try{
@@ -31,7 +32,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Add users</title>
+        <title>Add Users</title>
         <link rel="shortcut icon" href="https://learncodeweb.com/demo/favicon.ico">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" type="text/css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -47,7 +48,7 @@
                         <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                     </h5>
                     
-                    <a href="browseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
+                    <a href="adminbrowseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
                 </div>
                 <div class="card-body">
                     <div class="col-sm-6">
