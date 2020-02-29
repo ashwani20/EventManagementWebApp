@@ -53,7 +53,7 @@
                         <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
                             <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                         </h5>
-                        <a href="addusers.php" class="float-right btn btn-dark btn-sm">
+                        <a href="adminaddusers.php" class="float-right btn btn-dark btn-sm">
                             <i class="fa fa-fw fa-plus-circle"></i> Add Users
                         </a>
                 </div>
@@ -61,7 +61,7 @@
                 <div class="card-body">
                     <div class="col-sm-12">
                         <h5 class="card-title"><i class="fa fa-fw fa-search"></i> Find User</h5>
-                        <form action="browseusers.php" method="POST">
+                        <form action="adminbrowseusers.php" method="POST">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -112,8 +112,8 @@
                                     if ($val['role'] != 'superadmin'){
                                 ?>
                                 <td align="center">
-                                    <a href="editusers.php?editId=<?php echo $val['idattendee'];?>" class="text-primary"><i class="fa fa-fw fa-edit"></i> Edit</a> | 
-                                    <a href="deleteuser.php?delId=<?php echo$val['idattendee'];?>" class="text-danger" onClick="return confirm('Are you sure to delete this user?');"><i class="fa fa-fw fa-trash"></i> Delete</a>
+                                    <a href="admineditusers.php?editId=<?php echo $val['idattendee'];?>" class="text-primary"><i class="fa fa-fw fa-edit"></i> Edit</a> | 
+                                    <a href="admindeleteusers.php?delId=<?php echo$val['idattendee'];?>" class="text-danger" onClick="return confirm('Are you sure to delete this user?');"><i class="fa fa-fw fa-trash"></i> Delete</a>
                                 </td>
                                 <?php
                                     } else{
