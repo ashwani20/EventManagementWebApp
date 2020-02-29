@@ -1,4 +1,10 @@
 <?php
+    session_start();
+    if (!isset($_SESSION['admin'])){
+        header("Location: login.php");
+        die();
+    } 
+    
     include_once 'classes/PDO.DB.class.php';
     $dbObj = new DB();
     function getAllRoles($dbh){
@@ -36,13 +42,11 @@
     <body>
         <div class="container">
             <div class="card">
-                <!-- <div class="card-header"><i class="fa fa-fw fa-plus-circle"></i> <strong>Add User</strong> <a href="browseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
-                </div> -->
                 <div class="card-header"> 
                     <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
-                        <a class="my-0 mr-md-auto font-weight-normal" href="superadmin.php">BookMyEvent</a>
+                        <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                     </h5>
-                    <!-- <a class="my-0 mr-md-auto font-weight-normal" href="superadmin.php">BookMyEvent</a> -->
+                    
                     <a href="browseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
                 </div>
                 <div class="card-body">
@@ -87,7 +91,7 @@
         if (isset($_POST['submit'])){
             $data = [
                 'name' => $_POST['username'],
-                'password' => $_POST['userpwd'],
+                'password' => hash('sha256', $_POST['userpwd']),
                 'role' => $_POST['userrole'],
             ];
 

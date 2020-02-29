@@ -1,4 +1,10 @@
 <?php
+    session_start();
+    if (!isset($_SESSION['admin'])){
+        header("Location: login.php");
+        die();
+    } 
+
     include_once 'classes/PDO.DB.class.php';
     $data = array();
     if(isset($_GET['editId'])){
@@ -15,14 +21,14 @@
     function getAllRoles($dbh){
         $roles = array();
         try{
+            // $stmt = $dbh->prepare(" SELECT idrole, name
+                                    // FROM role;");
             $stmt = $dbh->prepare(" SELECT idrole, name
                                     FROM role
                                     where name <> 'superadmin';");
             $stmt->execute();
             $roles = $stmt->fetchAll();
-
             return $roles;
-
         } catch (PDOException $e) {
             echo $e->getMessage();
             return $roles;
@@ -49,7 +55,7 @@
             <div class="card">
                 <div class="card-header"> 
                     <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
-                        <a class="my-0 mr-md-auto font-weight-normal" href="superadmin.php">BookMyEvent</a>
+                        <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                     </h5>
                     <a href="browseusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a>
                 </div>
@@ -63,7 +69,8 @@
                             </div>
                             <div class="form-group">
                                 <label>Password <span class="text-danger">*</span></label>
-                                <input type="password" name="userpwd" id="userpwd" value = "<?php echo $data[0]['password']; ?>" class="form-control" placeholder="Enter user password" required>
+                                <!-- <input type="password" name="userpwd" id="userpwd" value = "<?php echo $data[0]['password']; ?>" class="form-control" placeholder="Enter user password" required> -->
+                                <input type="password" name="userpwd" id="userpwd" value = "" class="form-control" placeholder="Enter user password" required>
                             </div>
                             <div class="form-group">
                                 <label for = "userrole" >User Role <span class="text-danger">*</span></label>
@@ -87,7 +94,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add User</button>
+                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Edit User</button>
                             </div>
                         </form>
                     </div>
@@ -100,12 +107,16 @@
         if (isset($_POST['submit'])){
             $data = [
                 'name' => $_POST['username'],
-                'password' => $_POST['userpwd'],
+                // 'password' => $_POST['userpwd'],
+                'password' => hash('sha256', $_POST['userpwd']),
                 'role' => $_POST['userrole'],
+                'id' => $_GET['editId']
             ];
-
-            $sql = "INSERT INTO attendee (name, password, role) VALUES (:name, :password, :role)";
-
+            
+            // $sql = "INSERT INTO attendee (name, password, role) VALUES (:name, :password, :role)";
+            $sql = "UPDATE attendee SET name=:name, password=:password, role=:role WHERE idattendee=:id";
+            var_dump($_POST['userpwd']);
+            var_dump($data);
             $stmt= $dbObj->getDBH()->prepare($sql);
             $stmt->execute($data);
         }

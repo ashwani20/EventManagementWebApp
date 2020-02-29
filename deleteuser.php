@@ -1,4 +1,10 @@
-<?php 
+<?php
+    session_start();
+    if (!isset($_SESSION['admin'])){
+        header("Location: login.php");
+        die();
+    } 
+    
     include_once 'classes/PDO.DB.class.php';
     if(isset($_GET['delId']) and $_GET['delId'] !=""){
         $dbObj = new DB();

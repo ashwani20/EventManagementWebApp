@@ -1,8 +1,4 @@
 <?php
-    // session_unset();
-    // session_destroy();
-    // $_SESSION = array();
-
     session_start();
     
     // Unset all of the session variables.

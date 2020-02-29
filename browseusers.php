@@ -1,12 +1,12 @@
 <?php 
-    // session_start();
-    // if (!isset($_SESSION['superadmin'])){
-    //     header("Location: login.php");
-    //     die();
-    // } 
+    session_start();
+    if (!isset($_SESSION['admin'])){
+        header("Location: login.php");
+        die();
+    } 
     
     include_once 'classes/PDO.DB.class.php';
-    include_once 'classes/Attendee.class.php';
+    $dbObj = new DB();
 
     $name = "";
     if (isset($_POST['search'])){
@@ -16,26 +16,15 @@
     function getUserData($name, $dbh){
         $userData = array();
         try{
-            // $stmt = $dbh->prepare("SELECT * FROM attendee 
-            //                         where name like :name;");
             $stmt = $dbh->prepare("SELECT a.idattendee, a.name, a.password, r.name as role
                                     FROM role as r 
                                     INNER JOIN attendee as a 
                                     ON r.idrole = a.role 
-                                    WHERE a.name like :name
-                                    AND r.name <> 'superadmin';");
-
-                                    
-
+                                    WHERE a.name like :name;");
+           
             $name = "%$name%";
             $stmt->execute(array('name'=>$name));
             $userData = $stmt->fetchAll();
-
-            // $stmt->setFetchMode(PDO::FETCH_CLASS,"Attendee");
-            // while($row=$stmt->fetch()){
-            //     $userData[] = $row;
-            // }
-
             return $userData;
 
         } catch (PDOException $e) {
@@ -43,11 +32,6 @@
             return $userData;
         }
     }
-
-    $dbObj = new DB();
-    getUserData($name, $dbObj->getDBH());
-
-    
 ?>
 
 <!DOCTYPE html>
@@ -67,29 +51,17 @@
             <div class="card">
                 <div class="card-header"> 
                         <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
-                            <a class="my-0 mr-md-auto font-weight-normal" href="superadmin.php">BookMyEvent</a>
+                            <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                         </h5>
-                        
-                        <!-- <a href="addusers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Users</a> -->
                         <a href="addusers.php" class="float-right btn btn-dark btn-sm">
                             <i class="fa fa-fw fa-plus-circle"></i> Add Users
                         </a>
                 </div>
-                <!-- <div class="card-header">
-                    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-                        <i class="fa fa-fw fa-globe"></i> <strong>Browse User</strong>
-                        <nav class="my-2 my-md-0 mr-md-3">
-                            <a class="p-2 text-dark" href="superadmin.php">Home</a> 
-                            <a href="addusers.php" class="btn btn-dark btn-sm">
-                                <i class="fa fa-fw fa-plus-circle"></i> Add Users
-                            </a>
-                        </nav>
-                    </div>
-                </div> -->
+
                 <div class="card-body">
                     <div class="col-sm-12">
                         <h5 class="card-title"><i class="fa fa-fw fa-search"></i> Find User</h5>
-                        <form action="browseuser.php" method="POST">
+                        <form action="browseusers.php" method="POST">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -102,8 +74,8 @@
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <div>
-                                            <input type="submit" name="search" value="search" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i> Search</input>
-                                            <a href="" class="btn btn-danger"><i class="fa fa-fw fa-sync"></i> Clear</a>
+                                            <input type="submit" name="search" value="search" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></input>
+                                            <!-- <a href="" class="btn btn-danger"><i class="fa fa-fw fa-sync"></i> Clear</a> -->
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +100,6 @@
                         <?php
                             $dbObj = new DB();
                             $userData = getUserData($name, $dbObj->getDBH());
-                            // var_dump($userData);
                             if(count($userData)>0){
                                 foreach($userData as $val){
                             ?>
@@ -137,12 +108,22 @@
                                 <td><?php echo $val['name'];?></td>
                                 <td><?php echo $val['password'];?></td>
                                 <td><?php echo $val['role'];?></td>
-                                
+                                <?php
+                                    if ($val['role'] != 'superadmin'){
+                                ?>
                                 <td align="center">
                                     <a href="editusers.php?editId=<?php echo $val['idattendee'];?>" class="text-primary"><i class="fa fa-fw fa-edit"></i> Edit</a> | 
                                     <a href="deleteuser.php?delId=<?php echo$val['idattendee'];?>" class="text-danger" onClick="return confirm('Are you sure to delete this user?');"><i class="fa fa-fw fa-trash"></i> Delete</a>
                                 </td>
-                    
+                                <?php
+                                    } else{
+                                ?>
+                                <td align="center">
+                                    No actions
+                                </td>
+                                <?php
+                                }
+                                ?>
                             </tr>
                             <?php
                                 }
@@ -156,6 +137,4 @@
             </div> 
         </div>
     </body>
-
-
 </html>

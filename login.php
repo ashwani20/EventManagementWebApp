@@ -58,6 +58,7 @@
             // echo "heree";
             function getRoleType($name, $pwd, $dbh) {
                 try{
+                    $pwd = hash('sha256', $pwd);
                     $data = array();
                     $stmt = $dbh->prepare("SELECT r.name 
                                         FROM role as r INNER JOIN attendee as a 
@@ -65,8 +66,8 @@
                                         WHERE a.name = :name
                                         AND a.password = :pwd ;");
                     $stmt->execute(array('name'=>$name, 'pwd'=>$pwd));
-        
                     $data = $stmt->fetch();
+                    var_dump($data);
                     if (count($data) > 0) {
                         return $data['name'];
                     } 
@@ -85,6 +86,7 @@
                 $dbObj = new DB();
                 $name = $_POST['name'];
                 $roleType = getRoleType($name, $pwd, $dbObj->getDBH());
+                echo "<script type='text/javascript'>alert('$roleType');</script>";
 
                 if (empty($roleType)){
                     echo "Record not found";
@@ -92,9 +94,10 @@
                 else {
                     // manageUserSession($name);
                     session_start();
-                    $_SESSION[$name] = true;
+                    
                     switch($roleType){
                         case "admin":
+                            $_SESSION["admin"] = true;
                             header("Location: admin.php");
                             break;
                         case "attendee":
@@ -104,7 +107,8 @@
                             echo "redirect to event manager page";
                             break;
                         case "superadmin":
-                            header("Location: superadmin.php");
+                            $_SESSION["admin"] = true;
+                            header("Location: admin.php");
                             break;
                         default:
                             echo "Record not found";
