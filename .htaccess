@@ -1,0 +1,4 @@
+SetEnv DB ak8647
+SetEnv DB_SERVER localhost
+SetEnv DB_PASSWORD sceneguard
+SetEnv DB_USER ak8647
