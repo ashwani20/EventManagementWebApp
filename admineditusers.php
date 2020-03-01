@@ -76,9 +76,9 @@
                             <div class="form-group">
                                 <label for = "userrole" >User Role <span class="text-danger">*</span></label>
                                 <select name="userrole" id="userrole" class="form-control" required> 
-                                    <option value="">Select a role</option>
                                     <?php
                                         $roles = getAllRoles($dbObj->getDBH());
+                                        // var_dump($roles);
                                         if(count($roles)>0){
                                             foreach($roles as $val){
                                             if ($data[0]['role'] == $val['idrole']){
@@ -87,7 +87,9 @@
                                         <?php
                                             } else {
                                         ?>
-                                            <option value= <?php echo $val['idrole'];?>><?php echo $val['name'];?></option>    
+                                            <option value= <?php echo $val['idrole'];?>>
+                                                <?php echo $val['name'];?>
+                                            </option>    
                                         <?php
                                             }
                                         } 
