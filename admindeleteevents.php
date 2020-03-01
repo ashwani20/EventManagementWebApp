@@ -15,12 +15,12 @@
         $count->execute();
 
         // Removing records from manager_events table having event ID similiar to passed event ID
-        $count=$dbObj->getDBH()->prepare("DELETE FROM manager_event WHERE idevent =:id");
+        $count=$dbObj->getDBH()->prepare("DELETE FROM manager_event WHERE event =:id");
         $count->bindParam(":id", $_GET['delId'], PDO::PARAM_INT);
         $count->execute();
 
         // Removing records from attendee_events table having event ID similiar to passed event ID
-        $count=$dbObj->getDBH()->prepare("DELETE FROM attendee_event WHERE idevent =:id");
+        $count=$dbObj->getDBH()->prepare("DELETE FROM attendee_event WHERE event =:id");
         $count->bindParam(":id", $_GET['delId'], PDO::PARAM_INT);
         $count->execute();
 

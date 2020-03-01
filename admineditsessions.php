@@ -7,6 +7,20 @@
     ob_start();
     include_once 'classes/PDO.DB.class.php';
     $dbObj = new DB();
+    $data = array();
+    
+    if(isset($_GET['editId'])){
+        try{
+            $stmt = $dbObj->getDBH()->prepare("SELECT name, numberallowed, event,
+                                                DATE_FORMAT(startdate, '%Y-%m-%dT%H:%i') as startdate, 
+                                                DATE_FORMAT(enddate, '%Y-%m-%dT%H:%i') as enddate  
+                                                from session where idsession = :id");
+            $stmt->execute(array('id'=>$_GET['editId']));
+            $data = $stmt->fetchALL();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
 
     function getAllEvents($dbh){
         $events = array();
@@ -30,7 +44,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Add Session</title>
+        <title>Edit Session</title>
         <link rel="shortcut icon" href="https://learncodeweb.com/demo/favicon.ico">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" type="text/css">
         <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
@@ -84,32 +98,37 @@
                                         $events = getAllEvents($dbObj->getDBH());
                                         if(count($events)>0){
                                             foreach($events as $val){
+                                                if ($data[0]['event'] == $val['idevent']){
+                                        ?>
+                                            <option value= <?php echo $val['idevent'];?> selected><?php echo $val['name'];?></option>    
+                                        <?php
+                                            } else{
                                         ?>
                                             <option value= <?php echo $val['idevent'];?>><?php echo $val['name'];?></option>    
                                         <?php
-                                            }
+                                            } 
                                         } 
-                                        ?>
+                                    }?>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Session Name <span class="text-danger">*</span></label>
-                                <input type="text" name="sessionname" id="sessionname" class="form-control" placeholder="Enter session name" required>
+                                <input type="text" name="sessionname" id="sessionname" class="form-control" value = "<?php echo $data[0]['name']; ?>" placeholder="Enter session name" required>
                             </div>
                             <div class="form-group">
                                 <label>Session Start Date<span class="text-danger">*</span></label>
-                                <input type="datetime-local" name="sessionstartdate" id="sessionstartdate" class="form-control" required>
+                                <input type="datetime-local" name="sessionstartdate" id="sessionstartdate" class="form-control" value = "<?php echo $data[0]['startdate']; ?>" required>
                             </div>
                             <div class="form-group">
                                 <label>Session End Date<span class="text-danger">*</span></label>
-                                <input type="datetime-local" name="sessionenddate" id="sessionenddate" class="form-control" required>
+                                <input type="datetime-local" name="sessionenddate" id="sessionenddate" class="form-control" value = "<?php echo $data[0]['enddate']; ?>" required>
                             </div>
                             <div class="form-group">
                                 <label>Session Capacity <span class="text-danger">*</span></label>
-                                <input type="text" name="sessioncapacity" id="sessioncapacity" class="form-control" placeholder="Enter session capacity" required>
+                                <input type="text" name="sessioncapacity" id="sessioncapacity" class="form-control" placeholder="Enter session capacity" value = "<?php echo $data[0]['numberallowed']; ?>" required>
                             </div>
                             <div class="form-group">
-                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add Session</button>
+                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Edit Session</button>
                             </div>
                         </form>
                     </div>
@@ -125,10 +144,18 @@
                 'numberallowed' => $_POST['sessioncapacity'], 
                 'event' => $_POST['allevents'],
                 'startdate' => $_POST['sessionstartdate'],
-                'enddate' => $_POST['sessionenddate']
+                'enddate' => $_POST['sessionenddate'],
+                'idsession' => $_GET['editId']
             ];
 
-            $sql = "INSERT INTO session (name, numberallowed, event, startdate, enddate) VALUES (:name, :numberallowed, :event, :startdate, :enddate)";
+            $sql = "UPDATE session 
+                    SET name=:name, 
+                    numberallowed=:numberallowed, 
+                    event= :event, 
+                    startdate= :startdate, 
+                    enddate= :enddate
+                    WHERE idsession= :idsession";
+            
             // var_dump($data);
             // var_dump($sql);
             $stmt= $dbObj->getDBH()->prepare($sql);
