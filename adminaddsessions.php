@@ -30,7 +30,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Add Event</title>
+        <title>Add Session</title>
         <link rel="shortcut icon" href="https://learncodeweb.com/demo/favicon.ico">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" type="text/css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -46,31 +46,31 @@
                         <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                     </h5>
                     
-                    <a href="adminbrowseevents.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Events</a>
+                    <a href="adminbrowsesessions.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Sessions</a>
                 </div>
                 <div class="card-body">
                     <div class="col-sm-6">
                         <h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
                         <form method="post">
                             <div class="form-group">
-                                <label>Event Name <span class="text-danger">*</span></label>
-                                <input type="text" name="eventname" id="eventname" class="form-control" placeholder="Enter event name" required>
+                                <label>Session Name <span class="text-danger">*</span></label>
+                                <input type="text" name="sessionname" id="sessionname" class="form-control" placeholder="Enter session name" required>
                             </div>
                             <div class="form-group">
-                                <label>Event Start Date<span class="text-danger">*</span></label>
-                                <input type="datetime-local" name="eventstartdate" id="eventstartdate" class="form-control" value="<?php echo date('Y-m-d\TH:i');?>" required>
+                                <label>Session Start Date<span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="sessionstartdate" id="sessionstartdate" class="form-control" value="<?php echo date('Y-m-d\TH:i');?>" required>
                             </div>
                             <div class="form-group">
-                                <label>Event End Date<span class="text-danger">*</span></label>
-                                <input type="datetime-local" name="eventenddate" id="eventenddate" class="form-control" value="<?php echo date('Y-m-d\TH:i');?>" required>
+                                <label>Session End Date<span class="text-danger">*</span></label>
+                                <input type="datetime-local" name="sessionenddate" id="sessionenddate" class="form-control" value="<?php echo date('Y-m-d\TH:i');?>" required>
                             </div>
                             <div class="form-group">
-                                <label>Event Capacity <span class="text-danger">*</span></label>
-                                <input type="text" name="eventcapacity" id="eventcapacity" class="form-control" placeholder="Enter event capacity" required>
+                                <label>Session Capacity <span class="text-danger">*</span></label>
+                                <input type="text" name="sessioncapacity" id="sessioncapacity" class="form-control" placeholder="Enter session capacity" required>
                             </div>
                             <div class="form-group">
-                                <label for = "eventvenue">Event Venues<span class="text-danger">*</span></label>
-                                <select name="eventvenue" id="eventvenue" class="form-control" required> 
+                                <label for = "sessionvenue">Event List<span class="text-danger">*</span></label>
+                                <select name="sessionvenue" id="sessionvenue" class="form-control" required> 
                                     <option value="">Select a venue</option>
                                     <?php
                                         $venues = getAllVenues($dbObj->getDBH());
@@ -85,7 +85,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add Event</button>
+                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add Session</button>
                             </div>
                         </form>
                     </div>
@@ -97,11 +97,11 @@
     <?php
         if (isset($_POST['submit'])){
             $data = [
-                'name' => $_POST['eventname'],
-                'datestart' => $_POST['eventstartdate'],
-                'dateend' => $_POST['eventenddate'],
-                'numberallowed' => $_POST['eventcapacity'], 
-                'venue' => $_POST['eventvenue']
+                'name' => $_POST['sessionname'],
+                'numberallowed' => $_POST['sessioncapacity'], 
+                'datestart' => $_POST['sessionstartdate'],
+                'dateend' => $_POST['sessionenddate'],
+                'event' => $_POST['eventvenue']
             ];
 
             $sql = "INSERT INTO event (name, datestart, dateend, numberallowed, venue) VALUES (:name, :datestart, :dateend, :numberallowed, :venue)";

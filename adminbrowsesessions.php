@@ -16,12 +16,12 @@
     function getSessionData($name, $dbh){
         $sessionData = array();
         try{
-            $stmt = $dbh->prepare("SELECT e.idevent, e.name, e.datestart, e.dateend, 
-                                    e.numberallowed, v.name as venue
+            $stmt = $dbh->prepare(" SELECT s.idsession, s.name, s.startdate, s.enddate, 
+                                    s.numberallowed, e.name as event
                                     FROM event as e
-                                    INNER JOIN venue as v 
-                                    ON v.idvenue = e.venue
-                                    WHERE e.name like :name;");
+                                    INNER JOIN session as s 
+                                    ON e.idevent = s.event
+                                    WHERE s.name like :name;");
            
             $name = "%$name%";
             $stmt->execute(array('name'=>$name));
@@ -90,10 +90,10 @@
                         <tr class="bg-primary text-white">
                             <th>Session ID</th>
                             <th>Session Name</th>
+                            <th>Capacity</th>
+                            <th>Event Name</th>
                             <th>StartDate</th>
                             <th>EndDate</th>
-                            <th>Capacity</th>
-                            <th>Venue</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -107,10 +107,10 @@
                             <tr>
                                 <td><?php echo $val['idsession'];?></td>
                                 <td><?php echo $val['name'];?></td>
-                                <td><?php echo $val['datestart'];?></td>
-                                <td><?php echo $val['dateend'];?></td>
                                 <td><?php echo $val['numberallowed'];?></td>
-                                <td><?php echo $val['venue'];?></td>
+                                <td><?php echo $val['event'];?></td>
+                                <td><?php echo $val['startdate'];?></td>
+                                <td><?php echo $val['enddate'];?></td>
                                 <td align="center">
                                     <a href="admineditsessions.php?editId=<?php echo $val['idsession'];?>" class="text-primary"><i class="fa fa-fw fa-edit"></i> Edit</a> | 
                                     <a href="admindeletesessions.php?delId=<?php echo$val['idsession'];?>" class="text-danger" onClick="return confirm('Are you sure to delete this session?');"><i class="fa fa-fw fa-trash"></i> Delete</a>
