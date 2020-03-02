@@ -11,11 +11,14 @@
     
     $data = array();
     
-    if(isset($_GET['editIdManager'])){
+    if(isset($_GET['editIdAttendee'])){
         try{
-            $stmt = $dbObj->getDBH()->prepare(" SELECT name FROM attendee 
+            $stmt = $dbObj->getDBH()->prepare(" SELECT a.name, m.paid as paid 
+                                                FROM attendee as a
+                                                INNER JOIN attendee_event as m
+                                                ON m.attendee = a.idattendee
                                                 WHERE idattendee = :idattendee;");
-            $stmt->execute(array('idattendee'=>$_GET['editIdManager']));
+            $stmt->execute(array('idattendee'=>$_GET['editIdAttendee']));
             $data = $stmt->fetchALL();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -45,7 +48,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Edit Manager's Events</title>
+        <title>Edit Attendee's Events</title>
         <link rel="shortcut icon" href="https://learncodeweb.com/demo/favicon.ico">
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" type="text/css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -61,15 +64,15 @@
                         <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
                     </h5>
                     
-                    <a href="adminbrowseeventmanagers.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Events and Managers</a>
+                    <a href="adminregattendevent.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Events and Attendees</a>
                 </div>
                 <div class="card-body">
                     <div class="col-sm-6">
                         <h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
                         <form method="post">
                             <div class="form-group">    
-                                <label for = "manager" >Manager name<span class="text-danger">*</span></label>
-                                <input type="text" name="username" id="username" value = "<?php echo $data[0]['name']; ?>" class="form-control" disabled="disabled">
+                                <label for = "attendee" >Attendee name<span class="text-danger">*</span></label>
+                                <input type="text" name="attendee" id="attendee" value = "<?php echo $data[0]['name']; ?>" class="form-control" disabled="disabled">
                             </div>
                             <div class="form-group">
                                 <label for = "event" >Event name<span class="text-danger">*</span></label>
@@ -92,7 +95,11 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Edit Manager's Event</button>
+                                <label>Amount <span class="text-danger">*</span></label>
+                                <input type="number" name="paid" id="paid" class="form-control" value = "<?php echo $data[0]['paid']; ?>" placeholder="Enter event amount" min="-128" max="127" required>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Edit Attendee's Event</button>
                             </div>
                         </form>
                     </div>
@@ -105,18 +112,20 @@
         if (isset($_POST['submit'])){
             $data = [
                 'event' => $_POST['event'],
-                'manager' => $_GET['editIdManager']
+                'paid' => $_POST['paid'],
+                'attendee' => $_GET['editIdAttendee']
             ];
             
-            $sql = "UPDATE IGNORE manager_event 
-                    SET event= :event 
-                    WHERE manager= :manager";
-            // var_dump($data);
-            // var_dump($sql);
+            $sql = "UPDATE IGNORE attendee_event 
+                    SET event= :event,
+                    paid= :paid 
+                    WHERE attendee= :attendee";
+            var_dump($data);
+            var_dump($sql);
             $stmt= $dbObj->getDBH()->prepare($sql);
             $stmt->execute($data);
             
-            header("Location: adminbrowseeventmanagers.php");
+            header("Location: adminregattendevent.php");
             ob_end_flush();
             die();
         }
