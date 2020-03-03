@@ -56,22 +56,21 @@
         
         if (isset($_POST['name']) && isset($_POST['password'])){
             // echo "heree";
-            function getRoleType($name, $pwd, $dbh) {
+            function getUserData($name, $pwd, $dbh) {
                 try{
                     $pwd = hash('sha256', $pwd);
                     $data = array();
-                    $stmt = $dbh->prepare("SELECT r.name 
+                    $stmt = $dbh->prepare("SELECT r.name, a.idattendee 
                                         FROM role as r INNER JOIN attendee as a 
                                         ON r.idrole = a.role 
                                         WHERE a.name = :name
                                         AND a.password = :pwd ;");
                     $stmt->execute(array('name'=>$name, 'pwd'=>$pwd));
                     $data = $stmt->fetch();
-                    var_dump($data);
                     if (count($data) > 0) {
-                        return $data['name'];
+                        return $data;
                     } 
-                    return "";
+                    return data;
         
                 } catch (PDOException $e) {
                     echo $e->getMessage();
@@ -85,7 +84,9 @@
                 
                 $dbObj = new DB();
                 $name = $_POST['name'];
-                $roleType = getRoleType($name, $pwd, $dbObj->getDBH());
+                $userData = getUserData($name, $pwd, $dbObj->getDBH());
+                $roleType = $userData['name'];
+                $idattendee = $userData['idattendee'];
                 echo "<script type='text/javascript'>alert('$roleType');</script>";
 
                 if (empty($roleType)){
@@ -101,10 +102,14 @@
                             header("Location: admin.php");
                             break;
                         case "attendee":
-                            echo "redirect to attendee page";
+                            $_SESSION["attendee"] = true;
+                            header("Location: attendee.php");
                             break;
                         case "event manager":
-                            echo "redirect to event manager page";
+                            $_SESSION["eventmanager"] = true;
+                            $_SESSION["user"] = $name;
+                            $_SESSION["idattendee"] = $idattendee;
+                            header("Location: eventmanager.php");
                             break;
                         case "superadmin":
                             $_SESSION["admin"] = true;
