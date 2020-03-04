@@ -87,15 +87,15 @@
                 $userData = getUserData($name, $pwd, $dbObj->getDBH());
                 $roleType = $userData['name'];
                 $idattendee = $userData['idattendee'];
-                echo "<script type='text/javascript'>alert('$roleType');</script>";
-
+                
                 if (empty($roleType)){
                     echo "Record not found";
                 }
                 else {
                     // manageUserSession($name);
                     session_start();
-                    
+                    $_SESSION["user"] = $name;
+                    $_SESSION["idattendee"] = $idattendee;
                     switch($roleType){
                         case "admin":
                             $_SESSION["admin"] = true;
@@ -107,8 +107,6 @@
                             break;
                         case "event manager":
                             $_SESSION["eventmanager"] = true;
-                            $_SESSION["user"] = $name;
-                            $_SESSION["idattendee"] = $idattendee;
                             header("Location: eventmanager.php");
                             break;
                         case "superadmin":
