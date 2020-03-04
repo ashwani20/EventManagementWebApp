@@ -1,7 +1,7 @@
 <?php
     session_start();
     ob_start();
-    if (!isset($_SESSION['admin'])){
+    if (!isset($_SESSION['eventmanager'])){
         header("Location: login.php");
         die();
     } 
@@ -11,15 +11,15 @@
     
     $data = array();
     
-    if(isset($_GET['editIdAttendee'])){
+    if(isset($_GET['editIdAttendee']) && isset($_GET['editIdEvent'])){
         try{
             $stmt = $dbObj->getDBH()->prepare(" SELECT a.name, m.paid as paid 
                                                 FROM attendee as a
                                                 INNER JOIN attendee_event as m
                                                 ON m.attendee = a.idattendee
                                                 WHERE m.attendee = :idattendee
-                                                AND m.event =: event;");
-            $stmt->execute(array('idattendee'=> $_GET['editIdAttendee'], 'event'=>$_GET['editIdEvent']));
+                                                AND m.event =:event;");
+            $stmt->execute(array('idattendee'=>$_GET['editIdAttendee'], 'event'=>$_GET['editIdEvent']));
             $data = $stmt->fetchALL();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -30,8 +30,10 @@
         $events = array();
         try{
             $stmt = $dbh->prepare(" SELECT idevent, name
-                                    FROM event;");
-            $stmt->execute();
+                                    FROM event as e 
+                                    INNER JOIN manager_event as m ON m.event = e.idevent
+                                    WHERE m.manager = :manager;");
+            $stmt->execute(array('manager'=>$_SESSION['idattendee']));
             $events = $stmt->fetchAll();
 
             return $events;
@@ -62,10 +64,10 @@
             <div class="card">
                 <div class="card-header"> 
                     <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
-                        <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
+                        <a class="my-0 mr-md-auto font-weight-normal" href="eventmanager.php">BookMyEvent</a>
                     </h5>
                     
-                    <a href="adminregattendevent.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Events and Attendees</a>
+                    <a href="eventmanagerregattendevent.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Events and Attendees</a>
                 </div>
                 <div class="card-body">
                     <div class="col-sm-6">
@@ -121,11 +123,12 @@
                     SET event= :event,
                     paid= :paid 
                     WHERE attendee= :attendee";
-
+            // var_dump($data);
+            // var_dump($sql);
             $stmt= $dbObj->getDBH()->prepare($sql);
             $stmt->execute($data);
             
-            header("Location: adminregattendevent.php");
+            header("Location: eventmanagerregattendevent.php");
             ob_end_flush();
             die();
         }
