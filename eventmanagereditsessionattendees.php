@@ -1,7 +1,7 @@
 <?php
     session_start();
     ob_start();
-    if (!isset($_SESSION['admin'])){
+    if (!isset($_SESSION['eventmanager'])){
         header("Location: login.php");
         die();
     } 
@@ -17,8 +17,9 @@
                                                 FROM attendee as a
                                                 INNER JOIN attendee_session as m
                                                 ON m.attendee = a.idattendee
-                                                WHERE idattendee = :idattendee;");
-            $stmt->execute(array('idattendee'=>$_GET['editIdAttendee']));
+                                                WHERE idattendee = :idattendee
+                                                AND m.session =:session;");
+            $stmt->execute(array('idattendee'=>$_GET['editIdAttendee'], 'session'=>$_GET['editIdSession']));
             $data = $stmt->fetchALL();
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -64,10 +65,10 @@
             <div class="card">
                 <div class="card-header"> 
                     <h5 class="my-0 mr-md-auto font-weight-normal" style="display:inline"> 
-                        <a class="my-0 mr-md-auto font-weight-normal" href="admin.php">BookMyEvent</a>
+                        <a class="my-0 mr-md-auto font-weight-normal" href="eventmanager.php">BookMyEvent</a>
                     </h5>
                     
-                    <a href="adminregattendsession.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Sessions and Attendees</a>
+                    <a href="eventmanagerregattendsession.php" class="float-right btn btn-dark btn-sm"><i class="fa fa-fw fa-globe"></i> Browse Sessions and Attendees</a>
                 </div>
                 <div class="card-body">
                     <div class="col-sm-6">
@@ -117,12 +118,10 @@
             $sql = "UPDATE IGNORE attendee_session 
                     SET session= :session
                     WHERE attendee= :attendee";
-            // var_dump($data);
-            // var_dump($sql);
             $stmt= $dbObj->getDBH()->prepare($sql);
             $stmt->execute($data);
             
-            header("Location: adminregattendsession.php");
+            header("Location: eventmanagerregattendsession.php");
             ob_end_flush();
             die();
         }

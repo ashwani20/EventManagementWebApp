@@ -102,7 +102,7 @@
                 'numberallowed' => $_POST['eventcapacity'], 
                 'venue' => $_POST['eventvenue']
             ];
-            var_dump($data);
+
             $sql = "INSERT INTO event (name, datestart, dateend, numberallowed, venue) VALUES (:name, :datestart, :dateend, :numberallowed, :venue)";
             
             $stmt= $dbObj->getDBH()->prepare($sql);
