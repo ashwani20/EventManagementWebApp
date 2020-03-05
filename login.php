@@ -89,7 +89,8 @@
                 $idattendee = $userData['idattendee'];
                 
                 if (empty($roleType)){
-                    echo "Record not found";
+                    echo    '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Incorrect user name or password!</div>';
+                    // echo "Record not found";
                 }
                 else {
                     // manageUserSession($name);
