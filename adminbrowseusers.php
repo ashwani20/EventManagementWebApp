@@ -10,7 +10,8 @@
 
     $name = "";
     if (isset($_POST['search'])){
-        $name = $_POST['username'];
+        include_once 'sanitizedatafile.php';
+        $name = santizeText($_POST['username']);
     }
     
     function getUserData($name, $dbh){
@@ -75,7 +76,6 @@
                                         <label>&nbsp;</label>
                                         <div>
                                             <input type="submit" name="search" value="search" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></input>
-                                            <!-- <a href="" class="btn btn-danger"><i class="fa fa-fw fa-sync"></i> Clear</a> -->
                                         </div>
                                     </div>
                                 </div>
