@@ -4,6 +4,11 @@
         header("Location: login.php");
         die();
     } 
+
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['delId']) && !isValidNumber($_GET['delId'])){
+        header('location: adminbrowseevents.php');
+    }
     
     include_once 'classes/PDO.DB.class.php';
     if(isset($_GET['delId']) and $_GET['delId'] !=""){

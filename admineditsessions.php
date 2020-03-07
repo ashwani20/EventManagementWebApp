@@ -9,6 +9,11 @@
     $dbObj = new DB();
     $data = array();
     
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['editId']) && !isValidNumber($_GET['editId'])){
+        header('location: adminbrowsesessions.php');
+    }
+
     if(isset($_GET['editId'])){
         try{
             $stmt = $dbObj->getDBH()->prepare("SELECT name, numberallowed, event,
@@ -52,6 +57,44 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
         <script>
             $(document).ready(function(){
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var event = $("#allevents").val();
+                    var sessionname = $("#sessionname").val();
+                    var sessionstartdate = $("#sessionstartdate").val();
+                    var sessionenddate = $("#sessionenddate").val();
+                    var sessioncapacity = $("#sessioncapacity").val();
+                    var id = getUrlVars()['editId'];
+                    console.log(event, sessionstartdate, sessionenddate);
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxsessionfile.php",
+                        dataType: "json",
+                        data: {request:'update', sessionname:sessionname, event:event, 
+                        sessionstartdate:sessionstartdate, sessionenddate:sessionenddate, 
+                        sessioncapacity:sessioncapacity, event:event, id:id
+                        },
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+                function getUrlVars() {
+                    var vars = {};
+                    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                        vars[key] = value;
+                    });
+                    return vars;
+                }
                 $('#allevents').change(function(){
                     var idevent = $(this).val();
                     $.ajax({
@@ -137,32 +180,5 @@
         </div>        
     </body>
 
-    <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'name' => $_POST['sessionname'],
-                'numberallowed' => $_POST['sessioncapacity'], 
-                'event' => $_POST['allevents'],
-                'startdate' => $_POST['sessionstartdate'],
-                'enddate' => $_POST['sessionenddate'],
-                'idsession' => $_GET['editId']
-            ];
-
-            $sql = "UPDATE session 
-                    SET name=:name, 
-                    numberallowed=:numberallowed, 
-                    event= :event, 
-                    startdate= :startdate, 
-                    enddate= :enddate
-                    WHERE idsession= :idsession";
-            
-            // var_dump($data);
-            // var_dump($sql);
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            header("Location: adminbrowsesessions.php");
-            ob_end_flush();
-            die();
-        }
-    ?>
+   
 </html>

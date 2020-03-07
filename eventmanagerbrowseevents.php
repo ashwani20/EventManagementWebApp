@@ -11,7 +11,8 @@
 
     $name = "";
     if (isset($_POST['search'])){
-        $name = $_POST['eventname'];
+        include_once 'sanitizedatafile.php';
+        $name = santizeText($_POST['eventname']);
     }
     
     function getEventData($name, $dbh){
@@ -121,7 +122,7 @@
                                 <td><?php echo $val['manager'];?></td>
                                 <td align="center">
                                     <a href="eventmanagereditevents.php?editIdEvent=<?php echo $val['idevent'];?>&idManager=<?php echo $val['idmanager'];?>" class="text-primary"><i class="fa fa-fw fa-edit"></i> Edit</a> | 
-                                    <a href="eventmanagerdeleteevents.php?delIdEvent=<?php $val['idevent'];?>&idManager=<?php echo $val['idmanager'];?>" class="text-danger" onClick="return confirm('Are you sure to delete this event?');"><i class="fa fa-fw fa-trash"></i> Delete</a>
+                                    <a href="eventmanagerdeleteevents.php?delIdEvent=<?php echo $val['idevent'];?>&idManager=<?php echo $val['idmanager'];?>" class="text-danger" onClick="return confirm('Are you sure to delete this event?');"><i class="fa fa-fw fa-trash"></i> Delete</a>
                                 </td>
                                 
                             </tr>

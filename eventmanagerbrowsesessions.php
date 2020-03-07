@@ -10,7 +10,8 @@
 
     $name = "";
     if (isset($_POST['search'])){
-        $name = $_POST['sessionname'];
+        include_once 'sanitizedatafile.php';
+        $name = santizeText($_POST['sessionname']);
     }
     
     function getSessionData($name, $dbh){

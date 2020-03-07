@@ -9,7 +9,6 @@
         $request = $_POST['request'];
     }
 
-    $name = 
     // Fetch event record by idevent
     if($request == 1){
         $idevent = $_POST['idevent'];

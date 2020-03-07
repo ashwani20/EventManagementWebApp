@@ -9,8 +9,10 @@
     $dbObj = new DB();
 
     $name = "";
-    if (isset($_POST['search'])){
-        $name = $_POST['sessionname'];
+    if (isset($_POST['sessionname'])){
+        include_once 'sanitizedatafile.php';
+        $name = santizeText($_POST['sessionname']);
+        echo "$name";
     }
     
     function getSessionData($name, $dbh){
@@ -25,7 +27,7 @@
            
             $name = "%$name%";
             $stmt->execute(array('name'=>$name));
-            $sessionData = $stmt->fetchAll();
+            $sessionData = $stmt->fetchAll();            
             return $sessionData;
 
         } catch (PDOException $e) {
@@ -61,7 +63,7 @@
                 <div class="card-body">
                     <div class="col-sm-12">
                         <h5 class="card-title"><i class="fa fa-fw fa-search"></i> Find Session</h5>
-                        <form action="adminbrowsesessions.php" method="POST">
+                        <form action="adminbrowsesessions.php" method="post">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -74,7 +76,7 @@
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <div>
-                                            <input type="submit" name="search" value="search session" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></input>
+                                        <input type="submit" name="search" value="search session" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></input>
                                         </div>
                                     </div>
                                 </div>

@@ -5,8 +5,13 @@
         die();
     } 
     
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['delIdEvent']) && !isValidNumber($_GET['delIdEvent'])){
+        header('location: eventmanagerbrowseevents.php');
+    }
+
     include_once 'classes/PDO.DB.class.php';
-    if(isset($_SESSION['idattendee']) and $_GET['idattendee'] !="" &&
+    if(isset($_SESSION['idattendee']) and $_SESSION['idattendee'] !="" &&
                 $_GET['delIdEvent'] and $_GET['delIdEvent'] !=""){
         $dbObj = new DB();
         
@@ -21,7 +26,7 @@
         $count->bindParam(":event", $_GET['delIdEvent'], PDO::PARAM_INT);
         $count->execute();
         $idManager = $_SESSION['idattendee'];
-        header("Location: eventmanagerbrowseevents.php?idManager=$idManager");
+        header("Location: eventmanagerbrowseevents.php");
         die();
     }
 ?>

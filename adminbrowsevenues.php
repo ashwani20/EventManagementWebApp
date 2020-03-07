@@ -10,7 +10,8 @@
 
     $name = "";
     if (isset($_POST['search'])){
-        $name = $_POST['venuename'];
+        include_once 'sanitizedatafile.php';
+        $name = santizeText($_POST['venuename']);
     }
     
     function getVenueData($name, $dbh){

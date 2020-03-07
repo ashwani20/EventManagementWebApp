@@ -10,6 +10,11 @@
     $dbObj = new DB();
     $data = array();
     
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['editId']) && !isValidNumber($_GET['editId'])){
+        header('location: eventmanagerbrowsesessions.php');
+    }
+
     if(isset($_GET['editId'])){
         try{
             $stmt = $dbObj->getDBH()->prepare(" SELECT s.name, s.numberallowed, s.event, e.name as eventname,
@@ -40,28 +45,46 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
         <script>
-            // $(document).ready(function(){
-            //     $('#allevents').change(function(){
-            //         var idevent = $(this).val();
-            //         $.ajax({
-            //             url: 'sessionsajaxfile.php',
-            //             type: 'post',
-            //             data: {request: 1, idevent: idevent},
-            //             dataType: 'json',
-            //             success: function(response){
-            //                 // console.log(response);
-            //                 $("#sessionstartdate").val(response['datestart']);
-            //                 $("#sessionstartdate")[0].min = response['datestart'];
-
-            //                 $("#sessionenddate").val(response['dateend']);
-            //                 $("#sessionenddate")[0].max = response['dateend'];
-
-            //                 $("#sessioncapacity").val(response['numberallowed']);
-            //                 $("#sessioncapacity")[0].max = response['numberallowed'];
-            //             }
-            //         });
-            //     });
-            // });
+            $(document).ready(function(){
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var event = $("#allevents").val();
+                    var sessionname = $("#sessionname").val();
+                    var sessionstartdate = $("#sessionstartdate").val();
+                    var sessionenddate = $("#sessionenddate").val();
+                    var sessioncapacity = $("#sessioncapacity").val();
+                    var id = getUrlVars()['editId'];
+                    console.log(event, sessionstartdate, sessionenddate);
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxsessionfile.php",
+                        dataType: "json",
+                        data: {request:'updateManager', sessionname:sessionname, event:event, 
+                        sessionstartdate:sessionstartdate, sessionenddate:sessionenddate, 
+                        sessioncapacity:sessioncapacity, event:event, id:id
+                        },
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+                function getUrlVars() {
+                    var vars = {};
+                    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                        vars[key] = value;
+                    });
+                    return vars;
+                }
+                });
         </script>
     </head>
     </head>
@@ -108,29 +131,4 @@
             </div>
         </div>        
     </body>
-
-    <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'name' => $_POST['sessionname'],
-                'numberallowed' => $_POST['sessioncapacity'], 
-                'startdate' => $_POST['sessionstartdate'],
-                'enddate' => $_POST['sessionenddate'],
-                'idsession' => $_GET['editId']
-            ];
-
-            $sql = "UPDATE session 
-                    SET name=:name, 
-                    numberallowed=:numberallowed, 
-                    startdate= :startdate, 
-                    enddate= :enddate
-                    WHERE idsession= :idsession";
-
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            header("Location: eventmanagerbrowsesessions.php");
-            ob_end_flush();
-            die();
-        }
-    ?>
 </html>

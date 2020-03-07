@@ -21,6 +21,36 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+        <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+        <script>
+            $(document).ready(function() {
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var name = $("#venuename").val();
+                    var venuecapacity = $("#venuecapacity").val();
+                    
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxvenuefile.php",
+                        dataType: "json",
+                        data: {request:'create', name:name, venuecapacity:venuecapacity},
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+            });
+        </script>
     </head>
     </head>
     <body>
@@ -43,7 +73,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Venue Capacity <span class="text-danger">*</span></label>
-                                <input type="text" name="venuecapacity" id="venuecapacity" class="form-control" placeholder="Enter venue capacity" required>
+                                <input type="number" name="venuecapacity" id="venuecapacity" class="form-control" placeholder="Enter venue capacity" required>
                             </div>
                             <div class="form-group">
                                 <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add Venue</button>
@@ -54,21 +84,4 @@
             </div>
         </div>        
     </body>
-
-    <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'name' => $_POST['venuename'],
-                'capacity' => $_POST['venuecapacity']
-            ];
-
-            $sql = "INSERT INTO venue (name, capacity) VALUES (:name, :capacity)";
-
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            
-            header("Location: adminbrowsevenues.php");
-            die();
-        }
-    ?>
 </html>

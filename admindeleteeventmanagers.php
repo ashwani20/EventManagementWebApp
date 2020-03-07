@@ -5,6 +5,11 @@
         die();
     } 
     
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['editIdManager']) && !isValidNumber($_GET['editIdManager'])){
+        header('location: adminbrowseeventmanagers.php');
+    }
+
     include_once 'classes/PDO.DB.class.php';
     if(isset($_GET['editIdManager']) and $_GET['editIdManager'] !="" &&
                 $_GET['editIdEvent'] and $_GET['editIdEvent'] !=""){

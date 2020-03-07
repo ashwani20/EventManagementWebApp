@@ -10,6 +10,11 @@
     $dbObj = new DB();
     $data = array();
     
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['editId']) && !isValidNumber($_GET['editId'])){
+        header('location: adminbrowseevents.php');
+    }
+
     if(isset($_GET['editId'])){
         try{
             $stmt = $dbObj->getDBH()->prepare("SELECT name, 
@@ -53,6 +58,50 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+        <script>
+            $(document).ready(function() {
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var name = $("#eventname").val();
+                    var eventstartdate = $("#eventstartdate").val();
+                    var eventenddate = $("#eventenddate").val();
+                    var eventcapacity = $("#eventcapacity").val();
+                    var eventvenue = $("#eventvenue").val();
+                    var id = getUrlVars()['editId'];
+                    // console.log(name, eventstartdate, eventenddate);
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxeventfile.php",
+                        dataType: "json",
+                        data: {request:'updateManager', name:name, eventstartdate:eventstartdate, 
+                        eventenddate:eventenddate, eventcapacity:eventcapacity, 
+                        eventvenue:eventvenue, id:id},
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+            });
+
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+
+        </script>
     </head>
     </head>
     <body>
@@ -68,7 +117,7 @@
                 <div class="card-body">
                     <div class="col-sm-6">
                         <h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
-                        <form method="post">
+                        <form>
                             <div class="form-group">
                                 <label>Event Name <span class="text-danger">*</span></label>
                                 <input type="text" name="eventname" id="eventname" class="form-control" value = "<?php echo $data[0]['name']; ?>" required>
@@ -116,33 +165,4 @@
             </div>
         </div>        
     </body>
-
-    <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'name' => $_POST['eventname'],
-                'datestart' => $_POST['eventstartdate'],
-                'dateend' => $_POST['eventenddate'],
-                'numberallowed' => $_POST['eventcapacity'], 
-                'venue' => $_POST['eventvenue'],
-                'idevent' => $_GET['editId']
-            ];
-
-            
-            $sql = "UPDATE event 
-                    SET name=:name, 
-                    datestart=:datestart, 
-                    dateend=:dateend, 
-                    numberallowed=:numberallowed, 
-                    venue=:venue 
-                    WHERE idevent =:idevent";
-
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            
-            header("Location: adminbrowseevents.php");
-            ob_end_flush();
-            die();
-        }
-    ?>
 </html>

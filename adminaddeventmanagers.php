@@ -56,6 +56,34 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+        <script>
+            $(document).ready(function() {
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var event = $("#event").val();
+                    var manager = $("#manager").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxeventmanagerfile.php",
+                        dataType: "json",
+                        data: {request:'create', event:event, manager:manager},
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+            });
+        </script>
     </head>
     </head>
     <body>
@@ -113,21 +141,4 @@
             </div>
         </div>        
     </body>
-
-    <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'event' => $_POST['event'],
-                'manager' => $_POST['manager'],
-            ];
-
-            $sql = "INSERT INTO manager_event (event, manager) VALUES (:event, :manager)";
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            
-            header("Location: adminbrowseeventmanagers.php");
-            ob_end_flush();
-            die();
-        }
-    ?>
 </html>

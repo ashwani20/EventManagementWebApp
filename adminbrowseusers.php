@@ -9,7 +9,7 @@
     $dbObj = new DB();
 
     $name = "";
-    if (isset($_POST['search'])){
+    if (isset($_POST['username'])){
         include_once 'sanitizedatafile.php';
         $name = santizeText($_POST['username']);
     }
@@ -62,7 +62,7 @@
                 <div class="card-body">
                     <div class="col-sm-12">
                         <h5 class="card-title"><i class="fa fa-fw fa-search"></i> Find User</h5>
-                        <form action="adminbrowseusers.php" method="POST">
+                        <form action="adminbrowseusers.php" method="post">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -75,7 +75,7 @@
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <div>
-                                            <input type="submit" name="search" value="search" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></input>
+                                        <input type="submit" name="search" value="search venue" id="search" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></input>
                                         </div>
                                     </div>
                                 </div>

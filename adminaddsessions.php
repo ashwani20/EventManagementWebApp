@@ -16,7 +16,6 @@
             $stmt->execute();
             $events = $stmt->fetchAll();
             return $events;
-
         } catch (PDOException $e) {
             echo $e->getMessage();
             return $events;
@@ -39,6 +38,36 @@
         <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
         <script>
             $(document).ready(function(){
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var event = $("#allevents").val();
+                    var sessionname = $("#sessionname").val();
+                    var sessionstartdate = $("#sessionstartdate").val();
+                    var sessionenddate = $("#sessionenddate").val();
+                    var sessioncapacity = $("#sessioncapacity").val();
+                    console.log(event, sessionstartdate, sessionenddate);
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxsessionfile.php",
+                        dataType: "json",
+                        data: {request:'create', sessionname:sessionname, event:event, 
+                        sessionstartdate:sessionstartdate, sessionenddate:sessionenddate, 
+                        sessioncapacity:sessioncapacity, event:event},
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+
                 $('#allevents').change(function(){
                     var idevent = $(this).val();
                     $.ajax({
@@ -47,7 +76,7 @@
                         data: {request: 1, idevent: idevent},
                         dataType: 'json',
                         success: function(response){
-                            // console.log(response);
+                            console.log(response);
                             $("#sessionstartdate").val(response['datestart']);
                             $("#sessionstartdate")[0].min = response['datestart'];
 
@@ -76,7 +105,7 @@
                 <div class="card-body">
                     <div class="col-sm-6">
                         <h5 class="card-title">Fields with <span class="text-danger">*</span> are mandatory!</h5>
-                        <form method="post">
+                        <form>
                             <div class="form-group">
                                 <label for = "allevents">Event List<span class="text-danger">*</span></label>
                                 <select name="allevents" id="allevents" class="form-control" required> 
@@ -118,25 +147,4 @@
             </div>
         </div>        
     </body>
-
-    <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'name' => $_POST['sessionname'],
-                'numberallowed' => $_POST['sessioncapacity'], 
-                'event' => $_POST['allevents'],
-                'startdate' => $_POST['sessionstartdate'],
-                'enddate' => $_POST['sessionenddate']
-            ];
-
-            $sql = "INSERT INTO session (name, numberallowed, event, startdate, enddate) VALUES (:name, :numberallowed, :event, :startdate, :enddate)";
-            // var_dump($data);
-            // var_dump($sql);
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            header("Location: adminbrowsesessions.php");
-            ob_end_flush();
-            die();
-        }
-    ?>
 </html>

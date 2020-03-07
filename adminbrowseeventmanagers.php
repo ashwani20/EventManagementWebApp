@@ -10,7 +10,8 @@
 
     $name = "";
     if (isset($_POST['search'])){
-        $name = $_POST['managername'];
+        include_once 'sanitizedatafile.php';
+        $name = santizeText($_POST['managername']);
     }
     
     function getMangersData($name, $dbh){

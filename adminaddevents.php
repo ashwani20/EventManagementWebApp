@@ -36,6 +36,40 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+        <script>
+            $(document).ready(function() {
+                $('#submit').click(function(e){
+                    e.preventDefault();
+                    var name = $("#eventname").val();
+                    var eventstartdate = $("#eventstartdate").val();
+                    var eventenddate = $("#eventenddate").val();
+                    var eventcapacity = $("#eventcapacity").val();
+                    var eventvenue = $("#eventvenue").val();
+                    console.log(name, eventstartdate, eventenddate);
+                    $.ajax({
+                        type: "POST",
+                        url: "ajaxeventfile.php",
+                        dataType: "json",
+                        data: {request:'create', name:name, eventstartdate:eventstartdate, 
+                        eventenddate:eventenddate, eventcapacity:eventcapacity, 
+                        eventvenue:eventvenue},
+                        success : function(data){
+                            console.log(data);
+                            if (data['code'] == "200"){
+                                window.location.href = data['location'];
+                            }
+                            else if (data['code'] == "404"){
+                                if ($("#errorDiv")){
+                                    $("#errorDiv").remove();
+                                }
+                                $("form").prepend(data['msg']);
+                            } 
+                        }
+                    });
+                });
+            });
+        </script>
     </head>
     </head>
     <body>
@@ -66,7 +100,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Event Capacity <span class="text-danger">*</span></label>
-                                <input type="text" name="eventcapacity" id="eventcapacity" class="form-control" placeholder="Enter event capacity" required>
+                                <input type="number" name="eventcapacity" id="eventcapacity" class="form-control" placeholder="Enter event capacity" required>
                             </div>
                             <div class="form-group">
                                 <label for = "eventvenue">Event Venues<span class="text-danger">*</span></label>
@@ -85,7 +119,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add Event</button>
+                                <button type="submit" id="submit" name="submit" value="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Add Event</button>
                             </div>
                         </form>
                     </div>
@@ -95,22 +129,8 @@
     </body>
 
     <?php
-        if (isset($_POST['submit'])){
-            $data = [
-                'name' => $_POST['eventname'],
-                'datestart' => $_POST['eventstartdate'],
-                'dateend' => $_POST['eventenddate'],
-                'numberallowed' => $_POST['eventcapacity'], 
-                'venue' => $_POST['eventvenue']
-            ];
-
-            $sql = "INSERT INTO event (name, datestart, dateend, numberallowed, venue) VALUES (:name, :datestart, :dateend, :numberallowed, :venue)";
-
-            $stmt= $dbObj->getDBH()->prepare($sql);
-            $stmt->execute($data);
-            header("Location: adminbrowseevents.php");
-            ob_end_flush();
-            die();
-        }
+        // if (isset($_POST['submit'])){
+            
+        // }
     ?>
 </html>
