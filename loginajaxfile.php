@@ -26,8 +26,6 @@
         function connectToDB(){ 
             $name = $_POST['name'];
             $pwd = $_POST['password'];
-            // $name = "superadmin";
-            // $pwd = "superadmin";
             $dbObj = new DB();
 
             $userData = getUserData($name, $pwd, $dbObj->getDBH());

@@ -74,7 +74,7 @@
                         type: "POST",
                         url: "ajaxeventfile.php",
                         dataType: "json",
-                        data: {request:'updateManager', name:name, eventstartdate:eventstartdate, 
+                        data: {request:'update', name:name, eventstartdate:eventstartdate, 
                         eventenddate:eventenddate, eventcapacity:eventcapacity, 
                         eventvenue:eventvenue, id:id},
                         success : function(data){

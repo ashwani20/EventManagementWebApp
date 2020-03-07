@@ -1,3 +1,17 @@
+<?php
+    session_start();
+    if (isset($_SESSION['admin']) && $_SESSION['admin'] == true){
+        header("Location: admin.php");
+        die();
+    } else if (isset($_SESSION['eventmanager']) && $_SESSION['eventmanager'] == true){
+        header("Location: eventmanager.php");
+        die();
+    } else if (isset($_SESSION['attendee']) && $_SESSION['attendee'] == true){
+        header("Location: attendee.php");
+        die();
+    } 
+
+?>
 <!doctype html>
 <html lang="en">
   <head>

@@ -109,7 +109,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Amount <span class="text-danger">*</span></label>
-                                <input type="number" name="paid" id="paid" class="form-control" placeholder="Enter event amount" min="-128" max="127" required>
+                                <input type="number" name="paid" id="paid" class="form-control" placeholder="Enter event amount" min="0" max="127" required>
                             </div>
                             <div class="form-group">
                                 <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i>Add Event to Attendee</button>

@@ -11,16 +11,26 @@
     
     $data = array();
     
-    if(isset($_GET['editIdAttendee'])){
+    include_once 'sanitizedatafile.php';
+    if(isset($_GET['editIdAttendee']) && !isValidNumber($_GET['editIdAttendee'])){
+        header('location: adminregattendevent.php');
+    }
+    if(isset($_GET['editIdEvent']) && !isValidNumber($_GET['editIdEvent'])){
+        header('location: adminregattendevent.php');
+    }
+
+    if(isset($_GET['editIdAttendee']) && isset($_GET['editIdEvent'])){
         try{
             $stmt = $dbObj->getDBH()->prepare(" SELECT a.name, m.paid as paid 
                                                 FROM attendee as a
                                                 INNER JOIN attendee_event as m
                                                 ON m.attendee = a.idattendee
                                                 WHERE m.attendee = :idattendee
-                                                AND m.event =: event;");
-            $stmt->execute(array('idattendee'=> $_GET['editIdAttendee'], 'event'=>$_GET['editIdEvent']));
+                                                AND m.event = :event;");
+            // $stmt->execute(array('idattendee'=> $_GET['editIdAttendee'], 'event'=>$_GET['editIdEvent']));
+            $stmt->execute(array('idattendee'=>$_GET['editIdAttendee'], 'event'=>$_GET['editIdEvent']));
             $data = $stmt->fetchALL();
+            // var_dump($data);
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
@@ -97,7 +107,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Amount <span class="text-danger">*</span></label>
-                                <input type="number" name="paid" id="paid" class="form-control" value = "<?php echo $data[0]['paid']; ?>" placeholder="Enter event amount" min="-128" max="127" required>
+                                <input type="number" name="paid" id="paid" class="form-control" value = "<?php echo $data[0]['paid']; ?>" placeholder="Enter event amount" min="0" max="127" required>
                             </div>
                             <div class="form-group">
                                 <button type="submit" name="submit" value="submit" id="submit" class="btn btn-primary"><i class="fa fa-fw fa-plus-circle"></i> Edit Attendee's Event</button>
